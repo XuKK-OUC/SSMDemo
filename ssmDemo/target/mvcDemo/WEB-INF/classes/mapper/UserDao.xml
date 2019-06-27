@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.xjt.dao.IUserDao">
+
+    <select id="selectUser" resultType="user" parameterType="long">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
+
+    <!--得到所有用户信息-->
+    <select id="getAll" resultType="user">
+        SELECT * FROM user
+    </select>
+
+    <!--查找用户,根据用户id-->
+    <select id="getUserById" resultType="user" parameterType="int">
+        select * from user where id=#{id}
+    </select>
+
+    <!--插入用户,将主键自增的值返回到插入的对象当中-->
+    <insert id="insertOne" parameterType="user" useGeneratedKeys="true" keyProperty="id"  >
+      insert into user(username,birthday,sex,address) value (#{username},#{birthday},#{sex},#{address})
+    </insert>
+
+    <!--更新用户-->
+    <update id="update" parameterType="user">
+        update user set username=#{username},birthday=#{birthday},sex=#{sex},address=#{address} where id=#{id}
+    </update>
+
+    <!--根据id删除一个用户-->
+    <delete id="deleteById" parameterType="int">
+        delete from user where id=#{id}
+    </delete>
+    <resultMap id="userorderbean" type="com.xjt.model.UserAndOrderBean">
+        <result column="id" property="id"></result>
+        <result column="username" property="username"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="sex" property="sex"></result>
+        <result column="address" property="address"></result>
+        <result column="oid" property="oid"></result>
+        <result column="number" property="number"></result>
+        <result column="createtime" property="createtime"></result>
+
+    </resultMap>
+    <!--得到所有用户对应的订单信息List<UserAndOrderBean> getUserAndOrderInfo();-->
+    <!--  一对多  :方式一,创建返回数据的pojo类,也就是返回数据的bean进行封装  -->
+    <select id="getUserAndOrderInfo" resultType="com.xjt.model.UserAndOrderBean">
+      select u.id,u.username,u.birthday,u.sex ,u.address,o.id as oid,o.number,o.createtime from user u LEFT JOIN orders o on u.id=o.user_id
+       </select>
+    <!--得到所有用户对应的订单信息List<UserAndOrderBean> getUserAndOrderInfo();-->
+    <!--  一对多  :方式二,改造user对象,其中包含着order表的list,使用resultMap进行封装  -->
+    <resultMap id="userandscorebean" type="user">
+        <result column="id" property="id"></result>
+        <result column="username" property="username"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="sex" property="sex"></result>
+        <result column="address" property="address"></result>
+        <collection property="orders" ofType="orders">
+            <result column="oid" property="id"></result>
+            <result column="number" property="number"></result>
+            <result column="createtime" property="createtime"></result>
+        </collection>
+    </resultMap>
+    <select id="getUserAndOrderInfo2" resultMap="userandscorebean">
+      select u.id,u.username,u.birthday,u.sex ,u.address,o.id as oid,o.number,o.createtime from user u LEFT JOIN orders o on u.id=o.user_id
+       </select>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.xjt.dao.IOrdersMapper">
+<resultMap id="orderanduserinfo" type="orders">
+    <result column="id" property="id"></result>
+    <result column="number" property="number"></result>
+    <result column="createtime" property="createtime"></result>
+    <association property="user" javaType="user">
+        <result column="username" property="username"></result>
+        <result column="sex" property="sex"></result>
+        <result column="address" property="address"></result>
+    </association>
+</resultMap>
+<select id="getOrdersAndUserInfo" resultMap="orderanduserinfo">
+select o.id,o.number,o.createtime,u.username,u.sex,u.address from user u,orders o where o.user_id = u.id
+</select>
+
+</mapper>
